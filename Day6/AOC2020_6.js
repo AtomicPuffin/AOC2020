@@ -5,6 +5,7 @@ const filename = example? "example.txt" : "input.txt";
 
 const data = fs.readFileSync(filename, 'utf8');
 
+
 function countYes(groupAnswer){
     let listOfYes = {}
     for (const answer of groupAnswer) {
@@ -44,5 +45,5 @@ function partTwo(questionaires) {
     console.log(total)
 }
 
-partOne(data)
-partTwo(data)
+//partOne(data)
+//partTwo(data)
