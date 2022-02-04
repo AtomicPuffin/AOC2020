@@ -1,78 +1,83 @@
-'use strict';
 const fs = require('fs');
 const example = false;
-const filename = example? "example.txt" : "input.txt";
-
-const data = fs.readFileSync(filename, 'utf8');
-
-function parseRule(rule){
-        const key = rule.split(' ')[0] + rule.split(' ')[1];
-        let tail = rule.split(' ').slice(4);
-        let values = {};
-        while (tail.length > 0) {
-            if (tail[0] === 'no') {
-                break
-            } else {
-                values[tail[1]+tail[2]] = parseInt(tail[0])
-                tail = tail.slice(4)
-            }
+const filename = example ? "example.txt" : "input.txt";
+const data = fs.readFileSync(filename, 'utf8').replace(/\n$/, "").split('\n');
+//console.log('inp '+ input)
+//const data = input.split('\n');
+//console.log('dad '+data)
+function jump(argument, position) {
+    return argument + position;
+}
+function acc(argument, accumulator) {
+    return argument + accumulator;
+}
+function noOperation(argument) {
+}
+function execute(instructions) {
+    let position = 0;
+    let accumulator = 0;
+    let visited = [];
+    while (!(visited.includes(position))) {
+        if (position === instructions.length) {
+            return [accumulator, true];
         }
-    return [key, values]
-}
-
-function createLookupTable(rules) {
-    let ruleTable = {}
-    rules = rules.split('\n')
-    for (const rule of rules) {
-        ruleTable[parseRule(rule)[0]] = parseRule(rule)[1]
-    }
-    return ruleTable
-    
-}
-
-function recursiveSearch(lookupTable, lookingFor, rule) {
-    let answer = false
-    if (rule === {}) {
-        return false
-    }
-    if (lookingFor in rule) {
-        return true
-    }
-    for (const bag in rule) {
-        answer = answer || recursiveSearch(lookupTable, lookingFor, lookupTable[bag])
-    }
-    return answer
-}
-
-function recursiveCount(lookupTable, lookingFor) {
-    let count = 0
-    if (lookupTable[lookingFor] === {}) {
-        return count
-    }
-    for (const bag in lookupTable[lookingFor]) {
-        count = count + lookupTable[lookingFor][bag] + lookupTable[lookingFor][bag] * recursiveCount(lookupTable, bag)
-    }
-    return count
-}
-
-function partOne(rules){
-    const lookingFor = 'shinygold'
-    let answer = 0
-    const lookupTable = createLookupTable(rules)
-    for (const rule in lookupTable) {
-        if (lookupTable[rule] !== {} && recursiveSearch(lookupTable, lookingFor, lookupTable[rule])) {
-            answer++
+        if (position > instructions.length) {
+            return [0, false];
+        }
+        const argument = Number(instructions[position].split(' ')[1]);
+        switch (instructions[position].split(' ')[0]) {
+            case 'acc':
+                accumulator = acc(argument, accumulator);
+                visited.push(position);
+                position++;
+                break;
+            case 'jmp':
+                visited.push(position);
+                position = jump(argument, position);
+                break;
+            case 'nop':
+                noOperation(argument);
+                visited.push(position);
+                position++;
+                break;
+            default:
+                console.log('Switch messup execute');
+                console.log('switch error ' + instructions[position]);
+                return;
         }
     }
-    console.log(`Part One answer: ${answer}`)
+    return [accumulator, false];
 }
-
-function partTwo(rules) {
-    const lookingFor = 'shinygold'
-    const lookupTable = createLookupTable(rules)
-    let answer = recursiveCount(lookupTable, lookingFor)
-    console.log(`Part Two answer: ${answer}`)
+function partOne(instructions) {
+    let accumulator = execute(instructions);
+    console.log(`Part One answer: ${accumulator[0]}`);
 }
-
-partOne(data)
-partTwo(data)
+function partTwo(instructions) {
+    let position = 0;
+    while (position < instructions.length) {
+        let temp = [...instructions];
+        switch (instructions[position].split(' ')[0]) {
+            case 'acc':
+                break;
+            case 'jmp':
+                temp[position] = 'nop ' + instructions[position].split(' ')[1];
+                break;
+            case 'nop':
+                temp[position] = 'jmp ' + instructions[position].split(' ')[1];
+                break;
+            default:
+                console.log('Switch messup p2');
+                console.log(temp[position]);
+                return;
+        }
+        let result = execute(temp);
+        if (result[1]) {
+            console.log(`Part Two answer: ${result[0]}`);
+            return;
+        }
+        position++;
+    }
+}
+partOne(data);
+partTwo(data);
+//# sourceMappingURL=AOC2020_8.js.map
