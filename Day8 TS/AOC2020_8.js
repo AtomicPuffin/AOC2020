@@ -1,10 +1,16 @@
-const fs = require('fs');
-const example = false;
-const filename = example ? "example.txt" : "input.txt";
-const data = fs.readFileSync(filename, 'utf8').replace(/\n$/, "").split('\n');
-//console.log('inp '+ input)
-//const data = input.split('\n');
-//console.log('dad '+data)
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var fs = require('fs');
+var example = false;
+var filename = example ? "example.txt" : "input.txt";
+var data = fs.readFileSync(filename, 'utf8').replace(/\n$/, "").split('\n');
 function jump(argument, position) {
     return argument + position;
 }
@@ -14,9 +20,9 @@ function acc(argument, accumulator) {
 function noOperation(argument) {
 }
 function execute(instructions) {
-    let position = 0;
-    let accumulator = 0;
-    let visited = [];
+    var position = 0;
+    var accumulator = 0;
+    var visited = [];
     while (!(visited.includes(position))) {
         if (position === instructions.length) {
             return [accumulator, true];
@@ -24,7 +30,7 @@ function execute(instructions) {
         if (position > instructions.length) {
             return [0, false];
         }
-        const argument = Number(instructions[position].split(' ')[1]);
+        var argument = Number(instructions[position].split(' ')[1]);
         switch (instructions[position].split(' ')[0]) {
             case 'acc':
                 accumulator = acc(argument, accumulator);
@@ -49,13 +55,13 @@ function execute(instructions) {
     return [accumulator, false];
 }
 function partOne(instructions) {
-    let accumulator = execute(instructions);
-    console.log(`Part One answer: ${accumulator[0]}`);
+    var accumulator = execute(instructions);
+    console.log("Part One answer: ".concat(accumulator[0]));
 }
 function partTwo(instructions) {
-    let position = 0;
+    var position = 0;
     while (position < instructions.length) {
-        let temp = [...instructions];
+        var temp = __spreadArray([], instructions, true);
         switch (instructions[position].split(' ')[0]) {
             case 'acc':
                 break;
@@ -70,9 +76,9 @@ function partTwo(instructions) {
                 console.log(temp[position]);
                 return;
         }
-        let result = execute(temp);
+        var result = execute(temp);
         if (result[1]) {
-            console.log(`Part Two answer: ${result[0]}`);
+            console.log("Part Two answer: ".concat(result[0]));
             return;
         }
         position++;
@@ -80,4 +86,3 @@ function partTwo(instructions) {
 }
 partOne(data);
 partTwo(data);
-//# sourceMappingURL=AOC2020_8.js.map

@@ -3,9 +3,6 @@ const example = false;
 const filename = example? "example.txt" : "input.txt";
 
 const data = fs.readFileSync(filename, 'utf8').replace(/\n$/, "").split('\n');
-//console.log('inp '+ input)
-//const data = input.split('\n');
-//console.log('dad '+data)
 
 
 
