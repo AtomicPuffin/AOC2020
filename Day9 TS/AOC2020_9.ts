@@ -23,7 +23,7 @@ function validator(preamble: number[], check: number): boolean {
     return false
 }
 
-function find_first_invalid(data:number[], preamble_length: number): number{
+function findFirstInvalid(data:number[], preamble_length: number): number{
     let iter = preamble_length
     while (iter < data.length) {
         if (!validator(data.slice(iter-preamble_length ,iter+1), data[iter+1])) {
@@ -52,13 +52,13 @@ function contiguos(data:number[], invalid: number): number{
 }
 
 function partOne(data:number[], preamble_length: number): void{
-    const result = find_first_invalid(data, preamble_length)
+    const result = findFirstInvalid(data, preamble_length)
     console.log(`Part One answer: ${result}`)
     
 }
 
 function partTwo(data:number[], preamble_length: number): void{
-    const invalid = find_first_invalid(data, preamble_length)
+    const invalid = findFirstInvalid(data, preamble_length)
     const result = contiguos(data, invalid) 
     console.log(`Part Two answer: ${result}`)
 }
