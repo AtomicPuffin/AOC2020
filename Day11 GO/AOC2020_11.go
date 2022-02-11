@@ -14,21 +14,10 @@ func main() {
 func setup() []string {
 	//data, err := ioutil.ReadFile("example.txt")
 	data, err := ioutil.ReadFile("input.txt")
-	inputRaw := strings.Split(strings.TrimSuffix(string(data), "\n"), "\n")
+	input := strings.Split(strings.TrimSuffix(string(data), "\n"), "\n")
 	if err != nil {
 		panic(err)
 	}
-
-	input := []string{}
-	for _, line := range inputRaw {
-		input = append(input, "."+line+".")
-	}
-	emptyLine := ""
-	for i := 0; i < len(input[0]); i++ {
-		emptyLine = emptyLine + "."
-	}
-	input = append([]string{emptyLine}, input...)
-	input = append(input, emptyLine)
 	return input
 }
 
@@ -44,8 +33,11 @@ func countNeighbours1(layout []string, seat coordinate) int {
 	}
 	count := 0
 	for _, i := range neighbours {
-		if string(layout[seat.y+i[0]][seat.x+i[1]]) == "#" {
-			count++
+		y, x := seat.y+i[0], seat.x+i[1]
+		if x >= 0 && y >= 0 && x < len(layout[0]) && y < len(layout) {
+			if string(layout[y][x]) == "#" {
+				count++
+			}
 		}
 	}
 	return count
@@ -71,7 +63,7 @@ func countNeighbours2(layout []string, seat coordinate) int {
 }
 
 func seatEvaluation(layout []string, seat coordinate, limit int, count func([]string, coordinate) int) (string, bool) {
-	if string(layout[seat.y][seat.x]) == "." { // border will never check neighbours
+	if string(layout[seat.y][seat.x]) == "." {
 		return ".", false
 	}
 	neighbours := count(layout, seat)
@@ -91,6 +83,26 @@ func seatEvaluation(layout []string, seat coordinate, limit int, count func([]st
 	panic("seatEval not matching")
 }
 
+func iterate(limit int, count func([]string, coordinate) int) []string {
+	currentState := setup()
+	noChange := true
+	for noChange {
+		noChange = false
+		nextState := []string{}
+		for y := 0; y < len(currentState); y++ {
+			row := ""
+			for x := 0; x < len(currentState[0]); x++ {
+				newSeat, change := seatEvaluation(currentState, coordinate{x, y}, limit, count)
+				row = row + newSeat
+				noChange = noChange || change
+			}
+			nextState = append(nextState, row)
+		}
+		currentState = nextState
+	}
+	return currentState
+}
+
 func countSeats(layout []string) int {
 	counter := 0
 	for y := 0; y < len(layout); y++ {
@@ -104,44 +116,13 @@ func countSeats(layout []string) int {
 }
 
 func partOne() {
-	currentState := setup()
-	noChange := true
-	for noChange {
-		noChange = false
-		nextState := []string{}
-		for y := 0; y < len(currentState); y++ {
-			row := ""
-			for x := 0; x < len(currentState[0]); x++ {
-				newSeat, change := seatEvaluation(currentState, coordinate{x, y}, 4, countNeighbours1)
-				row = row + newSeat
-				noChange = noChange || change
-			}
-			nextState = append(nextState, row)
-		}
-		currentState = nextState
-	}
-
+	currentState := iterate(4, countNeighbours1)
 	fmt.Print("Part One answer: ")
 	fmt.Println(countSeats(currentState))
 }
 
 func partTwo() {
-	currentState := setup()
-	noChange := true
-	for noChange {
-		noChange = false
-		nextState := []string{}
-		for y := 0; y < len(currentState); y++ {
-			row := ""
-			for x := 0; x < len(currentState[0]); x++ {
-				newSeat, change := seatEvaluation(currentState, coordinate{x, y}, 5, countNeighbours2)
-				row = row + newSeat
-				noChange = noChange || change
-			}
-			nextState = append(nextState, row)
-		}
-		currentState = nextState
-	}
+	currentState := iterate(5, countNeighbours2)
 	fmt.Print("Part Two answer: ")
 	fmt.Println(countSeats(currentState))
 }
